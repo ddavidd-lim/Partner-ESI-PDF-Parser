@@ -11,7 +11,24 @@ pip install -r requirements.txt
 ```
 
 ### Installing
-getting local env running
+- **Clone the Repository**: 
+
+Replace YOUR-USERNAME with your GitHub username when running the command.
+```bash
+git clone https://github.com/YOUR-USERNAME/Partner-ESI-ML-Report.git
+```
+- **Navigate to Project Directory**: 
+```bash
+
+```
+- **Create a Virtual Environment (Optional)**: 
+```bash
+
+```
+- **Run the Project**: 
+```bash
+
+```
 
 ## Usage
 
