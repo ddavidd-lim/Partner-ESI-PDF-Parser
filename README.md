@@ -15,15 +15,26 @@ pip install -r requirements.txt
 
 Replace YOUR-USERNAME with your GitHub username when running the command.
 ```bash
-git clone https://github.com/YOUR-USERNAME/Partner-ESI-ML-Report.git
+git clone https://github.com/vtouch1/Partner-ESI-ML-Report.git
 ```
 - **Navigate to Project Directory**: 
 ```bash
-
+cd Partner-ESI-ML-Report
 ```
-- **Create a Virtual Environment (Optional)**: 
+- **Create a Virtual Environment using Python 3.8**: 
 ```bash
-
+pip install virtualenv
+```
+```bash
+virtualenv venv --python=3.8
+```
+- **Activate the Virtual Environment**: 
+```bash
+.\venv\Scripts\activate
+```
+- **Download required packages**: 
+```bash
+pip install -r requirements.txt
 ```
 - **Run the Project**: 
 ```bash
