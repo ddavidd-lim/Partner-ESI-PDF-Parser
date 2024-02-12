@@ -1,0 +1,183 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+
+import fitz
+import re
+from nltk import tokenize
+from nltk.stem import PorterStemmer
+from typing import List, Tuple, Dict
+import os
+
+
+
+class Section():
+  def __init__(self):
+    self.section_num = "0"
+    self.section_title = ""
+    self.text = []
+
+  def __str__(self):
+    return f"Section {self.section_num} {self.section_title}:"
+
+  def display_text(self):
+    for t in self.text:
+      print(t)
+
+
+def extract_by_section(pages: List[Tuple[str, List[str]]]) -> List[Section]:
+    """_summary_
+
+    Args:
+        pages (List[Tuple[str, List[str]]]): structured as: [('1', [line1, line2, ...]]
+
+    Returns:
+        List[Section]: List of Section objects
+    """
+    
+    sections = []
+    current_section = None
+    section_found  = False
+    for page, lines in pages:
+        for line in lines[4:]:
+            if line.endswith(".0"):
+                if current_section:
+                    sections.append(current_section)
+                current_section = Section()
+                current_section.section_num = line
+                section_found = True
+            elif line.isupper() and section_found and len(line) > 9:
+                current_section.section_title = line
+            if section_found:
+                current_section.text.append(line)
+    return sections
+
+
+def extract_subsections(sections: List[Section]) -> Dict[int, List[Section]]:
+    """_summary_
+
+    Args:
+        sections (List[Section]): List of Section objects
+
+    Returns:
+        Dict[int, List[Section]]: Dictionary containing main section number as key,
+                                    List of subsections as value
+    """
+    section_map = dict()
+    current_subsection = None
+    nextLineTitle = False
+    
+    for section in sections:
+        section_num = section.section_num[0]
+        subsections = []
+        for line in section.text:
+            if line.startswith(section_num):
+                if current_subsection:
+                    subsections.append(current_subsection)
+                current_subsection = Section()
+                subsection_number = line.split()
+                current_subsection.section_num = subsection_number[0]
+                
+                # Check if the title is in the same line as the section number
+                if len(subsection_number) >= 2:
+                    for word in subsection_number[1:]:
+                        current_subsection.section_title += word
+                    nextLineTitle = False
+                else:
+                    current_subsection.section_num = line
+                    nextLineTitle = True
+                    continue
+
+            if nextLineTitle:
+                current_subsection.section_title = line
+                nextLineTitle = False
+            else:
+                current_subsection.text.append(line)
+        subsections.append(current_subsection)
+        section_map[int(section_num)] = subsections
+        current_subsection = None
+
+    return section_map
+
+
+def display_all_sections(sections, displayText):
+    for section in sections:
+        print("--------------------------------------------------------------------------------------")
+        print(f"> Section number: {section}")
+        print(f"- Title: {section.section_title}")
+        if displayText:
+            section.display_text()
+
+
+def display_all_subsections(section_map, displayText):
+    for section in section_map.keys():
+        print("--------------------------------------------------------------------------------------")
+        for subsection in section_map[section]:
+            print(f"> Section number: {section}")
+            print(f"- Subsection number: {subsection.section_num}")
+            print(f"- Title: {subsection.section_title}")
+            if displayText:
+                subsection.display_text()
+
+
+def display_one_section(sections: List[Section], section_num):
+    print(f"Section number: {sections[section_num].section_num}")
+    print(f"Title: {sections[section_num ].section_title}")
+    sections[section_num].display_text()
+
+
+def display_one_sub_section(subsections: Dict[int, List[Section]], section_num, subsection_index):
+    print(f"Section number: {section_num}")
+    print(f"Subsection number: {subsections[section_num][subsection_index].section_num}")
+    print(f"Title: {subsections[section_num ][subsection_index].section_title}")
+    subsections[section_num][subsection_index].display_text()
+
+
+def remove_table_of_contents(pages):
+    return [i for i in pages if i[0] != ""]
+
+
+
+def process_file(filename:str) -> Dict[int, List[Section]]:
+    """_summary_
+
+    Args:
+        filename (str): the name of the file
+
+    Returns:
+        Dict[int, List[Section]]: A dictionary that maps main section number to a list of its subsections
+    """
+    pdf_name = "4444 east.pdf"
+    pdf_path = os.path.join("..", "data","raw", pdf_name)
+    output_path = pdf_path = os.path.join("..", "data","processed", "output.txt")
+    doc = fitz.open(pdf_path)
+    out = open(output_path, "wb")
+    for page in doc:
+        text = page.get_text().encode("utf8")
+        out.write(text)
+        out.write(bytes((12,)))
+    out.close()
+    doc.close()
+
+
+    pattern = r'Page\s+([\d]+)'
+    pages = []
+    page_num = ""
+    with open(output_path, 'r', encoding='utf8') as f:
+        page = []
+        for line in f:
+            if line.strip() != "":
+                page.append(line.strip())
+            matches = re.findall(pattern, line)
+            if len(matches) > 0:
+                page_num = matches[0]
+            if '\f' in line:
+                pages.append((page_num, page))
+                page = []
+                page_num = ""
+
+    content = remove_table_of_contents(pages)
+    sections = extract_by_section(content)
+    section_map = extract_subsections(sections)
+    
+    return section_map
