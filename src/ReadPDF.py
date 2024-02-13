@@ -4,8 +4,6 @@
 
 import fitz
 import re
-from nltk import tokenize
-from nltk.stem import PorterStemmer
 from typing import List, Tuple, Dict
 import os
 
