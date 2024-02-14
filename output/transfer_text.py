@@ -35,7 +35,7 @@ def get_section(start_section, end_section):
             i += 1
             if start_section in line:
                 sections.append(i)
-                print(line, i)
+                print(2, i)
             if end_section in line:
                 sections.append(i)
         sections = sections[2:]
