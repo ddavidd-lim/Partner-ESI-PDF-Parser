@@ -134,9 +134,10 @@ def process_file(filename:str) -> Dict[int, List[Section]]:
     Returns:
         Dict[int, List[Section]]: A dictionary that maps main section number to a list of its subsections
     """
-    pdf_name = "4444 east.pdf"
-    pdf_path = os.path.join("..", "data","raw", pdf_name)
-    output_path = pdf_path = os.path.join("..", "data","processed", "output.txt")
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    pdf_name = filename
+    pdf_path = os.path.join(current_directory, "..", "data","raw", pdf_name)
+    output_path = os.path.join(current_directory, "..", "data","processed", "output.txt")
     doc = fitz.open(pdf_path)
     out = open(output_path, "wb")
     for page in doc:

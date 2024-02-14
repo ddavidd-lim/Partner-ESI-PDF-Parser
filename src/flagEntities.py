@@ -22,12 +22,18 @@ def flagText(text: str) -> str:
     offset = 0
     startflag = "[FLAG]"
     endflag = "[/FLAG]"
+    # print(type(ner_results))  # Check the type of ner_results
+    # print(len(ner_results))   # Check the length of ner_results
+    print("-------------------------------")     # Print the first element of ner_results
+    for n in ner_results:
+        print(n)
+    
     
     for index, json in enumerate(ner_results):
         if json["entity"].startswith("B"):
             if index != 0:
                 end = ner_results[index-1]["end"] + offset
-                print(f"Start: {start}, end: {end}")
+                # print(f"Start: {start}, end: {end}")
                 
                 flagged_text = flagged_text[:start] + startflag + flagged_text[start:end] + endflag + flagged_text[end:]
                 offset += len(startflag) + len(endflag)
@@ -35,4 +41,6 @@ def flagText(text: str) -> str:
                 
             elif index == 0:
                 start = json["start"]
+        else:
+            start = json["start"]
     return flagged_text
