@@ -4,25 +4,12 @@
 
 import fitz
 import re
-from nltk import tokenize
-from nltk.stem import PorterStemmer
 from typing import List, Tuple, Dict
 import os
 
-
-
-class Section():
-  def __init__(self):
-    self.section_num = "0"
-    self.section_title = ""
-    self.text = []
-
-  def __str__(self):
-    return f"Section {self.section_num} {self.section_title}:"
-
-  def display_text(self):
-    for t in self.text:
-      print(t)
+import sys
+sys.path.append('../src/')
+from classes.Section import Section
 
 
 def extract_by_section(pages: List[Tuple[str, List[str]]]) -> List[Section]:
@@ -147,9 +134,10 @@ def process_file(filename:str) -> Dict[int, List[Section]]:
     Returns:
         Dict[int, List[Section]]: A dictionary that maps main section number to a list of its subsections
     """
-    pdf_name = "4444 east.pdf"
-    pdf_path = os.path.join("..", "data","raw", pdf_name)
-    output_path = pdf_path = os.path.join("..", "data","processed", "output.txt")
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    pdf_name = filename
+    pdf_path = os.path.join(current_directory, "..", "data","raw", pdf_name)
+    output_path = os.path.join(current_directory, "..", "data","processed", "output.txt")
     doc = fitz.open(pdf_path)
     out = open(output_path, "wb")
     for page in doc:
