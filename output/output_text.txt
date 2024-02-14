@@ -1,49 +1,17 @@
- 
+
 PHASE I ENVIRONMENTAL 
 SITE ASSESSMENT REPORT 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
 2021 Fund VI Recap 
 4444 East 26th Street 
 Vernon, California 90058 
  
 November 15, 2021 
 Partner Project No. 21-342562.35 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
 Prepared for: 
 LBA RVI-Company XII, LLC and Bank of America, N.A. 
 3347 Michelson Drive, Suite 200 
 Irvine, California 92612 
- 
  
  
 2154 Torrance Blvd., Suite 200, Torrance, CA 90501 ◊ 
@@ -1256,20 +1224,7 @@ observation from publicly accessible rights-of-way.
 2.4 
 Physical Setting Sources 
 2.4.1  Topography 
-The United States Geological Survey (USGS) (FLAG) Los
-Angeles, California Quadrangle 7.5-minute (FLAG) series 
-topographic map was reviewed for this ESA.  The
-subject property lies at an approximate elevation of
-161 
-feet above mean sea level (msl) with a local
-topographic gradient toward the southeast.  
-A copy of the most recent topographic map is included
-as Figure 3. 
- 
-Phase I Environmental Site Assessment 
-Project No. 21-342562.35 
-November 15, 2021 
-Page 6 
+testing yay
 2.4.2 
 Hydrology 
 According to information obtained from the State
