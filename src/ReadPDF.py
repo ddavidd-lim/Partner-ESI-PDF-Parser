@@ -11,6 +11,18 @@ import sys
 sys.path.append('../src/')
 from classes.Section import Section
 
+def select_Section(sections, section_num) -> str:
+    try:
+        list_section_text = ['\n'.join(section.text) for section in sections] 
+        return list_section_text[section_num - 1]
+    except:
+        return ValueError("Section out of bounds.")
+
+def select_Subsection(subsection_dict, section_num, subsection) -> str:
+    try:
+        return ' '.join(subsection_dict[section_num][subsection].text)
+    except:
+        return ValueError("Subsection out of bounds.")
 
 def extract_by_section(pages: List[Tuple[str, List[str]]]) -> List[Section]:
     """_summary_
@@ -169,3 +181,38 @@ def process_file(filename:str) -> Dict[int, List[Section]]:
     section_map = extract_subsections(sections)
     
     return section_map
+
+def process_into_sections(filename:str) -> List[Section]:
+	current_directory = os.getcwd()
+	pdf_name = filename
+	pdf_path = os.path.join(current_directory, "..", "data","raw", pdf_name)
+	output_path = os.path.join(current_directory, "..", "data","processed", "output.txt")
+	doc = fitz.open(pdf_path)
+	out = open(output_path, "wb")
+	for page in doc:
+	    text = page.get_text().encode("utf8")
+	    out.write(text)
+	    out.write(bytes((12,)))
+	out.close()
+	doc.close()
+	
+	
+	pattern = r'Page\s+([\d]+)'
+	pages = []
+	page_num = ""
+	with open(output_path, 'r', encoding='utf8') as f:
+	    page = []
+	    for line in f:
+	        if line.strip() != "":
+	            page.append(line.strip())
+	        matches = re.findall(pattern, line)
+	        if len(matches) > 0:
+	            page_num = matches[0]
+	        if '\f' in line:
+	            pages.append((page_num, page))
+	            page = []
+	            page_num = ""
+	
+	content = remove_table_of_contents(pages)
+	sections = extract_by_section(content)
+	return sections
