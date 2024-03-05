@@ -53,10 +53,8 @@ def extract_by_section(pages: List[Tuple[str, List[str]]]) -> List[Section]:
 				for word in split_line[1:]:
 					current_section.section_title += word
 				nextLineTitle = False
-				continue
 			else:
 				nextLineTitle = True
-				continue
 			
 			# Process lines other than section num
 			if nextLineTitle:
