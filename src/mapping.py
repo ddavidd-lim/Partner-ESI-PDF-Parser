@@ -13,7 +13,7 @@ def xlsxToDf(file: str) -> pd.DataFrame:
     '''
     try:
         cwd = os.getcwd()
-        file_path = os.path.join(cwd, file)
+        file_path = os.path.join(cwd, "..", "data", "raw", file)
         df = pd.read_excel(file_path)
         return df
     except Exception as e:
@@ -64,6 +64,5 @@ def execute():
     esaDf = esaRows(df)
     return mapping(esaDf)
 
-execute()
 
 # note: 2182 values ESA found in dict mapping and in Excel file (confirmed)
