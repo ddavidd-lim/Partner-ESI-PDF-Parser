@@ -39,14 +39,29 @@ def extract_by_section(pages: List[Tuple[str, List[str]]]) -> List[Section]:
 	section_found  = False
 	for page, lines in pages:
 		for line in lines[4:]:
-			if line.endswith(".0"):
+			# Split section num from line
+			split_line = line.split()
+			section_num = split_line[0]
+			if section_num.endswith(".0"):
 				if current_section:
 					sections.append(current_section)
 				current_section = Section()
 				current_section.section_num = line
 				section_found = True
-			elif line.isupper() and section_found and len(line) > 9:
+			# Check if the title is in the same line as the section number
+			if len(split_line) >= 2:
+				for word in split_line[1:]:
+					current_section.section_title += word
+				nextLineTitle = False
+				continue
+			else:
+				nextLineTitle = True
+				continue
+			
+			# Process lines other than section num
+			if nextLineTitle:
 				current_section.section_title = line
+				nextLineTitle = False
 			if section_found:
 				current_section.text.append(line)
 	return sections
