@@ -3,7 +3,7 @@ from transformers import pipeline
 
 
 
-def flagText(text: str) -> str:
+def flagText(nlp, text: str) -> str:
     """This function uses a BERT model to identify entities in the text and flags the beginning and end of entites
 
     Args:
@@ -12,10 +12,6 @@ def flagText(text: str) -> str:
     Returns:
         str: The flagged text
     """
-    tokenizer = AutoTokenizer.from_pretrained("dslim/bert-base-NER")
-    model = AutoModelForTokenClassification.from_pretrained("dslim/bert-base-NER")
-
-    nlp = pipeline("ner", model=model, tokenizer=tokenizer)
 
     ner_results = nlp(text)
     flagged_text = text

@@ -36,9 +36,9 @@ virtualenv venv --python=3.8
 ```bash
 pip install -r requirements.txt
 ```
-- **Run the Project**: 
+- **Run the Project**:
 ```bash
-
+python .\src\generateTemplate.py
 ```
 
 ## Usage
