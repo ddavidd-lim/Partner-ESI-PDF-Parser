@@ -7,8 +7,6 @@ import torch
 from scipy.spatial.distance import cosine
 
 # USING OPENAI
-
-# Replace "your_api_key_here" with your actual OpenAI API key
 # openai.api_key = os.getenv("openai-key")
 
 # def get_embedding(sentence):
@@ -32,44 +30,42 @@ from scipy.spatial.distance import cosine
 
 # # Calculate and print cosine similarity
 # similarity = cosine_similarity(embedding_1, embedding_2)
-# print(f"Cosine Similarity: {similarity}")
+# print("Cosine Similarity:" + similarity)
 
 
 
 # Load model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
-model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+def similiarity_test(sent1: str, sent2: str) -> str:
+    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+    model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 
-# Sentences to compare
-# High similiarity 
-# sentence1 = "He is reading a book in the library."
-# sentence2 = "She is studying literature at the library."
+    # Encode and compute embeddings
+    with torch.no_grad():
+        tokens1 = tokenizer(sent1, return_tensors="pt", padding=True, truncation=True)
+        tokens2 = tokenizer(sent2, return_tensors="pt", padding=True, truncation=True)
 
-# Moderate similiarity
-# sentence1 = "He is reading a book in the library."
-# sentence2 = "She is studying literature at the library."
+        embeddings1 = model(**tokens1).pooler_output
+        embeddings2 = model(**tokens2).pooler_output
 
-# Low similiarity
-sentence1 = "The cat is sleeping on the sofa."
-sentence2 = "I plan to start a new exercise regime tomorrow."
+    # Calculate cosine similarity (note: 1-cosine because scipy calculates distance)
+    similarity = 1 - cosine(embeddings1[0].numpy(), embeddings2[0].numpy())
 
-
-# Encode and compute embeddings
-with torch.no_grad():
-    tokens1 = tokenizer(sentence1, return_tensors="pt", padding=True, truncation=True)
-    tokens2 = tokenizer(sentence2, return_tensors="pt", padding=True, truncation=True)
-
-    embeddings1 = model(**tokens1).pooler_output
-    embeddings2 = model(**tokens2).pooler_output
-
-# Calculate cosine similarity (note: 1-cosine because scipy calculates distance)
-similarity = 1 - cosine(embeddings1[0].numpy(), embeddings2[0].numpy())
-
-print(f"Similarity: {similarity}")
+    return similarity
 
 
+if __name__ == "__main__":
+    # Sentences to compare
+    # High similiarity 
+    sentence1 = "The weather is sunny and bright today."
+    sentence2 = "Today, the sun is shining brightly."
 
+    # Moderate similiarity
+    # sentence1 = "He is reading a book in the library."
+    # sentence2 = "She is studying literature at the library."
 
+    # Low similiarity
+    # sentence1 = "The cat is sleeping on the sofa."
+    # sentence2 = "I plan to start a new exercise regime tomorrow."
 
-# if __name__ == "__main__":
-#     print(os.getenv("openai-key"))
+    print(similiarity_test(sentence1, sentence2))
+
