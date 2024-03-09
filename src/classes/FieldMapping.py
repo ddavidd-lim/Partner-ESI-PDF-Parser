@@ -1,4 +1,13 @@
 class FieldMapping:
+	"""
+		An abstraction of a dictionary which maps section_num to its mappings of fields within
+		that section
+  
+		key   = section_num: int
+		value = mapping: dict
+				key   = datafield: str
+				value = question: str
+	"""
 	def __init__(self):
 		self.fields = dict()
   
