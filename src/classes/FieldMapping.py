@@ -1,4 +1,4 @@
-class FieldMapping:
+class SectionFieldsMap:
     """
         An abstraction of a dictionary which maps section_num to its mappings of fields within
         that section
