@@ -11,18 +11,6 @@ import sys
 sys.path.append('../src/')
 from classes.Section import Section
 
-def select_Section(sections, section_num) -> str:
-	try:
-		list_section_text = ['\n'.join(section.text) for section in sections] 
-		return list_section_text[section_num - 1]
-	except:
-		return ValueError("Section out of bounds.")
-
-def select_Subsection(subsection_dict, section_num, subsection) -> str:
-	try:
-		return ' '.join(subsection_dict[section_num][subsection].text)
-	except:
-		return ValueError("Subsection out of bounds.")
 
 def extract_by_section(pages: List[Tuple[str, List[str]]]) -> List[Section]:
 	"""_summary_
@@ -112,46 +100,12 @@ def extract_subsections(sections: List[Section]) -> Dict[int, List[Section]]:
 	return section_map
 
 
-def display_all_sections(sections, displayText):
-	for section in sections:
-		print("--------------------------------------------------------------------------------------")
-		print(f"> Section number: {section}")
-		print(f"- Title: {section.section_title}")
-		if displayText:
-			section.display_text()
-
-
-def display_all_subsections(section_map, displayText):
-	for section in section_map.keys():
-		print("--------------------------------------------------------------------------------------")
-		for subsection in section_map[section]:
-			print(f"> Section number: {section}")
-			print(f"- Subsection number: {subsection.section_num}")
-			print(f"- Title: {subsection.section_title}")
-			if displayText:
-				subsection.display_text()
-
-
-def display_one_section(sections: List[Section], section_num):
-	print(f"Section number: {sections[section_num].section_num}")
-	print(f"Title: {sections[section_num ].section_title}")
-	sections[section_num].display_text()
-
-
-def display_one_sub_section(subsections: Dict[int, List[Section]], section_num, subsection_index):
-	print(f"Section number: {section_num}")
-	print(f"Subsection number: {subsections[section_num][subsection_index].section_num}")
-	print(f"Title: {subsections[section_num ][subsection_index].section_title}")
-	subsections[section_num][subsection_index].display_text()
-
-
 def remove_table_of_contents(pages):
 	return [i for i in pages if i[0] != ""]
 
 
-
 def process_file(filename:str) -> Dict[int, List[Section]]:
-	"""_summary_
+	"""
 
 	Args:
 		filename (str): the name of the file
