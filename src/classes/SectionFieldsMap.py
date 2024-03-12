@@ -8,8 +8,8 @@ class SectionFieldsMap:
                 key   = datafield: str
                 value = question: str
     """
-    def __init__(self):
-        self.fields = dict()
+    def __init__(self, fields):
+        self.fields = fields
   
     def items(self):
         """
