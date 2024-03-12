@@ -5,6 +5,16 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.documents import Document
 
 class Prompter:
+    """
+    A class for generating prompts and invoking a language model to retrieve datafields within a given context.
+
+    Attributes:
+        model_chain (StuffDocumentsChain): A chain of components used for processing prompts and contexts.
+
+    Methods:
+        __init__(): Initializes the Prompter object by setting up the language model chain.
+        invoke(prompt, context): Invokes the language model chain to retrieve datafields within the given context.
+    """
     def __init__(self):
         llm = Ollama(model="phi", temperature=0, num_predict=40, top_k=5, top_p=.5, mirostat_tau=0, format="json")
         json_parser = JsonOutputParser()
@@ -23,6 +33,16 @@ class Prompter:
         self.model_chain = create_stuff_documents_chain(llm, prompt, output_parser=json_parser)
     
     def invoke(self, prompt, context):
+        """
+        Invokes the language model chain to retrieve datafields within the given context.
+
+        Args:
+            prompt (str): The prompt for retrieving the datafield.
+            context (str): The context within which the datafield should be retrieved.
+
+        Returns:
+            dict: A dictionary containing the retrieved datafields.
+        """
         json = self.model_chain.invoke({
           "input": str(prompt),
           "context": [Document(page_content=context)]
