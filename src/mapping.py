@@ -1,6 +1,8 @@
 import pandas as pd
 import os
 
+# TODO: add function to create instances of classes
+
 def xlsxToDf(file: str) -> pd.DataFrame:
     '''
     Reads Excel file and returns information as a pandas Dataframe.
@@ -20,8 +22,14 @@ def xlsxToDf(file: str) -> pd.DataFrame:
         print("An error occurred:", e)
         return None  
     
+# used for lambda to check if section reference cell is part of section number    
+def checkSection(value, section):
+    return str(value)[0] == section
 
-def esaRows(df: pd.DataFrame) -> pd.DataFrame:
+def esaRows(df: pd.DataFrame, section) -> pd.DataFrame:
+    # TODO: take in a section_num parameter to further filter fields
+    # TODO: check if the string value of the section reference is goal section -> account for str, float, and int
+
     '''
     Filters the DataFrame to extract the valid rows containing ESA values .
 
@@ -32,7 +40,10 @@ def esaRows(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: DataFrame containing only rows related to Esa Reports.
     '''
     esa_df = df[df['Bool convert mc commas'] == 'EsaReportField']
-    return esa_df
+    all_sections = esa_df['Section Reference']
+    section_df = esa_df[all_sections.apply(lambda x: checkSection(x, section))]
+    print(section_df)
+    return section_df
 
 
 def mapping(df: pd.DataFrame) -> dict:
@@ -53,6 +64,7 @@ def mapping(df: pd.DataFrame) -> dict:
 
 # call to execute code and retrieve mapping
 def execute():
+    # TODO: needs to now return mapping {section_number: {field_values}} for all report sections
     '''
     Executes workflow to retrieve mapping from the 'PCA_FIELDS.xlsx' Excel file.
 
@@ -61,8 +73,9 @@ def execute():
     '''
     excel_file = 'PCA_FIELDS.xlsx'
     df = xlsxToDf(excel_file)
-    esaDf = esaRows(df)
+    esaDf = esaRows(df, '5') # testing 
     return mapping(esaDf)
 
 
+execute()
 # note: 2182 values ESA found in dict mapping and in Excel file (confirmed)
