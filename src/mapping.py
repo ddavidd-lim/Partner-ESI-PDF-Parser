@@ -2,7 +2,6 @@ from classes import SectionFieldsMap as sfm
 import pandas as pd
 import os
 
-# TODO: add function to create instances of classes
 
 def xlsxToDf(file: str) -> pd.DataFrame:
     '''
@@ -24,23 +23,30 @@ def xlsxToDf(file: str) -> pd.DataFrame:
         return None  
     
 
-# used for lambda to check if section reference cell is part of section number    
-def checkSection(value, section):
+def checkSection(value, section: str) -> bool:
+    '''
+    Checks if the value belongs to specified section.
+
+    Parameters:
+        value (int, str, float): the value in DataFrame to check.
+        section (str): the report section number to check against.
+
+    Returns:
+        bool: True if value is included in section, False otherwise.
+    '''
     return str(value)[0] == section
 
 
-def esaRows(df: pd.DataFrame, section) -> pd.DataFrame:
-    # TODO: take in a section_num parameter to further filter fields
-    # TODO: check if the string value of the section reference is goal section -> account for str, float, and int
-
+def esaRows(df: pd.DataFrame, section: str) -> pd.DataFrame:
     '''
-    Filters the DataFrame to extract the valid rows containing ESA values .
+    Filters the DataFrame to extract the valid rows containing ESA values within corresponding section.
 
     Parameters:
         df (pd.DataFrame): original DataFrame of the Excel file.
+        section (str): the report section number to filter.
 
     Returns:
-        pd.DataFrame: DataFrame containing only rows related to Esa Reports.
+        pd.DataFrame: DataFrame containing only rows related to Esa Reports within passed in section.
     '''
     esa_df = df[df['Bool convert mc commas'] == 'EsaReportField']
     all_sections = esa_df['Section Reference']
@@ -53,7 +59,7 @@ def fieldMapping(df: pd.DataFrame) -> dict:
     Creates mapping of valid field values to their corresponding descriptions in DataFrame.
 
     Parameters:
-        df (pd.DataFrame): DataFrame containing only rows related to Esa Reports.
+        df (pd.DataFrame): DataFrame containing rows related to Esa Reports and report section.
 
     Returns:
         dict: Dictionary mapping {"field_value_code": "description"} of rows.
@@ -63,7 +69,17 @@ def fieldMapping(df: pd.DataFrame) -> dict:
         questions[row["Name"]] = row["Section Integer"]
     return questions
 
-def createSections(df):
+
+def createSections(df: pd.DataFrame) -> dict:
+    '''
+    Generates dictionary containing all sections in ESA reports and their data.
+
+    Parameters:
+        df (pd.DataFrame): DataFrame containing rows related to Esa Reports and report section.
+
+    Returns:
+        dict: Dictionary mapping {section_number: SectionFieldsMap object} containing all sections.
+    '''
     df1 = esaRows(df, '1')
     section1 = sfm.SectionFieldsMap(fieldMapping(df1))
     df2 = esaRows(df, '2')
@@ -81,21 +97,29 @@ def createSections(df):
     return {1: section1, 2: section2, 3: section3, 4: section4, 5: section5, 6: section6, 7: section7}
 
 
-
-# call to execute code and retrieve mapping
-def execute():
-    # TODO: needs to now return mapping {section_number: {field_values}} for all report sections
+# call to execute code and retrieve section mappings
+def execute() -> dict:
     '''
-    Executes workflow to retrieve mapping from the 'PCA_FIELDS.xlsx' Excel file.
+    Executes workflow to retrieve section mappings from the 'PCA_FIELDS.xlsx' Excel file.
 
     Returns:
-        dict: Dictionary mapping {"field_value_code": "description"} of rows.
+        dict: Dictionary mapping {section_number: SectionFieldsMap} containing all sections.
+
+    Note: SectionFieldsMap contains fields attribute that stores section field value mappings.
     '''
     excel_file = 'PCA_FIELDS.xlsx'
     df = xlsxToDf(excel_file)
     sections = createSections(df)
     return sections
 
+if __name__ == "__main__":
+    result = execute()
+    print("\nFINAL MAPPING:")
+    print(result)
 
-print(execute())
-# note: 2182 values ESA found in dict mapping and in Excel file (confirmed)
+    for section in result:
+        print("\nSECTION", str(section) + ":")
+        print(result[section].fields)
+
+
+# note: 2182 values ESA found in dict mapping and in Excel file
