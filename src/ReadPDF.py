@@ -11,6 +11,18 @@ import sys
 sys.path.append('../src/')
 from classes.Section import Section
 
+def select_Section(sections, section_num) -> str:
+	try:
+		list_section_text = ['\n'.join(section.text) for section in sections] 
+		return list_section_text[section_num - 1]
+	except:
+		raise ValueError("Section out of bounds.")
+
+def select_Subsection(subsection_dict, section_num, subsection) -> str:
+	try:
+		return ' '.join(subsection_dict[section_num][subsection].text)
+	except:
+		raise ValueError("Subsection out of bounds.")
 
 def extract_by_section(pages: List[Tuple[str, List[str]]]) -> List[Section]:
 	"""_summary_
@@ -105,7 +117,7 @@ def remove_table_of_contents(pages):
 
 
 def process_file(filename:str) -> Dict[int, List[Section]]:
-	"""
+	"""_summary_
 
 	Args:
 		filename (str): the name of the file
