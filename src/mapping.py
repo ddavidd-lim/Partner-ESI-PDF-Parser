@@ -1,3 +1,4 @@
+from classes import SectionFieldsMap as sfm
 import pandas as pd
 import os
 
@@ -22,9 +23,11 @@ def xlsxToDf(file: str) -> pd.DataFrame:
         print("An error occurred:", e)
         return None  
     
+
 # used for lambda to check if section reference cell is part of section number    
 def checkSection(value, section):
     return str(value)[0] == section
+
 
 def esaRows(df: pd.DataFrame, section) -> pd.DataFrame:
     # TODO: take in a section_num parameter to further filter fields
@@ -42,11 +45,10 @@ def esaRows(df: pd.DataFrame, section) -> pd.DataFrame:
     esa_df = df[df['Bool convert mc commas'] == 'EsaReportField']
     all_sections = esa_df['Section Reference']
     section_df = esa_df[all_sections.apply(lambda x: checkSection(x, section))]
-    print(section_df)
     return section_df
 
 
-def mapping(df: pd.DataFrame) -> dict:
+def fieldMapping(df: pd.DataFrame) -> dict:
     '''
     Creates mapping of valid field values to their corresponding descriptions in DataFrame.
 
@@ -61,6 +63,24 @@ def mapping(df: pd.DataFrame) -> dict:
         questions[row["Name"]] = row["Section Integer"]
     return questions
 
+def createSections(df):
+    df1 = esaRows(df, '1')
+    section1 = sfm.SectionFieldsMap(fieldMapping(df1))
+    df2 = esaRows(df, '2')
+    section2 = sfm.SectionFieldsMap(fieldMapping(df2))
+    df3 = esaRows(df, '3')
+    section3 = sfm.SectionFieldsMap(fieldMapping(df3))
+    df4 = esaRows(df, '4')
+    section4 = sfm.SectionFieldsMap(fieldMapping(df4))
+    df5 = esaRows(df, '5')
+    section5 = sfm.SectionFieldsMap(fieldMapping(df5))
+    df6 = esaRows(df, '6')
+    section6 = sfm.SectionFieldsMap(fieldMapping(df6))
+    df7 = esaRows(df, '7')
+    section7 = sfm.SectionFieldsMap(fieldMapping(df7))
+    return {1: section1, 2: section2, 3: section3, 4: section4, 5: section5, 6: section6, 7: section7}
+
+
 
 # call to execute code and retrieve mapping
 def execute():
@@ -73,9 +93,9 @@ def execute():
     '''
     excel_file = 'PCA_FIELDS.xlsx'
     df = xlsxToDf(excel_file)
-    esaDf = esaRows(df, '5') # testing 
-    return mapping(esaDf)
+    sections = createSections(df)
+    return sections
 
 
-execute()
+print(execute())
 # note: 2182 values ESA found in dict mapping and in Excel file (confirmed)
