@@ -50,7 +50,8 @@ class SectionFieldsMap:
         Raises:
             ValueError: If the specified section number does not exist in the fields mapping.
         """
-        if section_num in self.fields:
-                return self.fields[section_num]
-        else:
-                raise ValueError("Section number does not exist")
+        return self.fields
+        # if section_num in self.fields:
+        #         return self.fields[section_num]
+        # else:
+        #         raise ValueError("Section number does not exist")
