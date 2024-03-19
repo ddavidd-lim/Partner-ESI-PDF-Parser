@@ -24,9 +24,8 @@ def xlsxToDf(file: str) -> pd.DataFrame:
     
 
 def checkSection(value, section: str) -> bool:
-    # TODO: check the entire subsection up to three places x.x.x
     '''
-    Checks if the value belongs to specified section.
+    Checks if the value belongs to specified subsection.
 
     Parameters:
         value (int, str, float): the value in DataFrame to check.
@@ -48,19 +47,18 @@ def checkSection(value, section: str) -> bool:
 
 def esaRows(df: pd.DataFrame, section: str) -> pd.DataFrame:
     '''
-    Filters the DataFrame to extract the valid rows containing ESA values within corresponding section.
+    Filters the DataFrame to extract the valid rows containing ESA values within corresponding subsection.
 
     Parameters:
         df (pd.DataFrame): original DataFrame of the Excel file.
         section (str): the report section number to filter.
 
     Returns:
-        pd.DataFrame: DataFrame containing only rows related to Esa Reports within passed in section.
+        pd.DataFrame: DataFrame containing only rows related to Esa Reports within subsection.
     '''
-    esa_df = df[df['Bool convert mc commas'] == 'EsaReportField'] # DATAFRAME OF ALL ESA REPORT ROWS
-
+    esa_df = df[df['Bool convert mc commas'] == 'EsaReportField'] 
     all_sections = esa_df['Section Reference']
-    section_df = esa_df[all_sections.apply(lambda x: checkSection(x, section))] # DATAFRAME OF ALL SUBSECTION ROWS
+    section_df = esa_df[all_sections.apply(lambda x: checkSection(x, section))] 
     return section_df
 
 
@@ -80,10 +78,7 @@ def fieldMapping(df: pd.DataFrame) -> dict:
     return questions
 
 
-def createSections(df: pd.DataFrame) -> dict:
-    # TODO: iterate through valid subsections to get esa rows and mappings
-    # TODO: make final mapping of each subsections and inner dicts
-    # TODO: return one instance of section fields map with all data
+def createSections(df: pd.DataFrame) -> sfm.SectionFieldsMap:
     '''
     Generates dictionary containing all sections in ESA reports and their data.
 
@@ -91,64 +86,47 @@ def createSections(df: pd.DataFrame) -> dict:
         df (pd.DataFrame): DataFrame containing rows related to Esa Reports and report section.
 
     Returns:
-        dict: Dictionary mapping {section_number: SectionFieldsMap object} containing all sections.
+        sfm.SectionFieldsMap: Object with dictionary mapping {subsection_num: {field: descript.}}} for all subsections.
     '''
     esa_df = df[df['Bool convert mc commas'] == 'EsaReportField']
+    sub_df = esa_df['Section Reference'].dropna()
+    #section_set = set(sub_df)
+    edited = set(str(each) for each in sub_df)
 
-    section_references = esa_df['Section Reference'].dropna()
-    section_set = set(section_references)
-    edited = set(str(each) for each in section_set)
-
-    final = {}
+    data = {}
     for sec in edited:
         temp = esaRows(df, sec)
-        d = fieldMapping(temp)
-        final[sec] = d
-    
-    # testing
-    print(final)
-    for k,v in final.items():
-        print(k, v)
-    section = sfm.SectionFieldsMap(final)
-    print(section)
-    print(len(final))
-    print(len(edited))
-    print(edited)
-
-    return section
+        mapping = fieldMapping(temp)
+        data[sec] = mapping
+        
+    subsections = sfm.SectionFieldsMap(data)
+    return subsections
 
 
-# call to execute code and retrieve subsection mappings
-def execute() -> dict:
-    #TODO: retrieve one object instead of one per section
+# call to execute code and retrieve final mapping 
+def execute() -> sfm.SectionFieldsMap:
     '''
-    Executes workflow to retrieve section mappings from the 'PCA_FIELDS.xlsx' Excel file.
+    Executes workflow to retrieve subsection mappings from the 'PCA_FIELDS.xlsx' Excel file.
 
     Returns:
-        dict: Dictionary mapping {section_number: SectionFieldsMap} containing all sections.
+        sfm.SectionFieldsMap: Object with dictionary mapping {subsection_num: {field: descript.}}} for all subsections.
 
-    Note: SectionFieldsMap contains fields attribute that stores section field value mappings.
+    Note: SectionFieldsMap contains fields attribute that stores this mapping.
     '''
     excel_file = 'PCA_FIELDS.xlsx'
     df = xlsxToDf(excel_file)
-    # call function to get the mapping
-    # iterate through mapping and make esaRow dataframe for each
-    # make mapping of each and add it to final SectionsFieldMap fields dict
-    #sections = esaRows(df)
     sections = createSections(df)
     return sections
 
 if __name__ == "__main__":
     result = execute()
-    # excel_file = 'PCA_FIELDS.xlsx'
-    # df = xlsxToDf(excel_file)
-    # testing(df)
-    # print("\nFINAL MAPPING:")
-    # print(result)
 
-    # for section in result:
-    #     print("\nSECTION", str(section) + ":")
-    #     print(result[section].fields)
-
+    for section in result.fields:
+        print("\nSECTION", str(section) + ":")
+        print(result.fields[section])
+    
+    print("\nFINAL MAPPING:")
+    print(result)
 
 # note: 2182 values ESA found in dict mapping and in Excel file
+
