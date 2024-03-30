@@ -119,14 +119,15 @@ def execute() -> sfm.SectionFieldsMap:
     return sections
 
 if __name__ == "__main__":
+    # run for testing purposes
     result = execute()
 
     for section in result.fields:
         print("\nSECTION", str(section) + ":")
         print(result.fields[section])
     
-    print("\nFINAL MAPPING:")
+    print("\nFINAL MAPPING OBJECT:")
     print(result)
 
-# note: 2182 values ESA found in dict mapping and in Excel file
+# note: 2182 ESA values found and verified 
 
