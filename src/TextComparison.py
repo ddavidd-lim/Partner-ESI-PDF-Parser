@@ -40,15 +40,12 @@ class TextComparison:
         self.similarity_scores = result
         return result
         
-    def retrieve_results(self) -> Tuple[List[str], List[str], List[str]]:
+    def retrieve_section_similarity(self, similarity_scores) -> Tuple[List[str], List[str], List[str]]:
         # Record which keys are correct, partially correct, or incorrect
-        if self.similarity_scores == {}:
-            raise ValueError("No similarity scores have been calculated yet. Call compare_maps first.")
         correct = []
         partially_correct = []
         incorrect = []
-        self.similarity_scores = self.similarity_scores
-        for datafield, score in self.similarity_scores.items():
+        for datafield, score in similarity_scores.items():
             string1 = score[0]
             string2 = score[1]
             similarity = float(score[2])
@@ -64,7 +61,17 @@ class TextComparison:
             
         return correct, partially_correct, incorrect
     
-    
+    def retrieve_document_similarity(self, section_fields_map1: SectionFieldsMap, section_fields_map2: SectionFieldsMap, threshold: float) -> Tuple[List[str], List[str], List[str]]:
+        correct = []
+        partially_correct = []
+        incorrect = []
+        for section_num in section_fields_map1.fields:
+            sfm_results = self.compare_maps(section_fields_map1.get_section_fields(section_num), section_fields_map2.get_section_fields(section_num), threshold)
+            c, pc, ic = self.retrieve_section_similarity(sfm_results)
+            correct.extend(c)
+            partially_correct.extend(pc)
+            incorrect.extend(ic)
+        return correct, partially_correct, incorrect
     
 
 
@@ -84,7 +91,7 @@ if __name__ == "__main__":
     section_num = 1
     sfm_results = text_comparator.compare_maps(section_fields_map1.get_section_fields(section_num), section_fields_map2.get_section_fields(section_num), 0)
     print(f"Results for section {section_num}: \n{sfm_results}")
-    correct, partially_correct, incorrect = text_comparator.retrieve_results()
+    correct, partially_correct, incorrect = text_comparator.retrieve_section_similarity(sfm_results)
     
     print(f"Correct: {correct}\nPartially Correct: {partially_correct}\nIncorrect: {incorrect}")
     # m_result = text_comparator.compare_maps(m1,m2,80)
