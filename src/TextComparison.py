@@ -2,6 +2,7 @@ from transformers import AutoTokenizer, AutoModel
 from scipy.spatial.distance import cosine
 import torch
 from typing import Mapping
+from classes.SectionFieldsMap import SectionFieldsMap
 
 class TextComparison:
     def  __init__(self, model_name = "sentence-transformers/all-MiniLM-L6-v2"):
@@ -19,16 +20,18 @@ class TextComparison:
 
         # Calculate cosine similarity (note: 1-cosine because scipy calculates distance)
         similarity = 1 - cosine(embeddings1[0].numpy(), embeddings2[0].numpy())
-        return round(similarity,3)
+        return round(similarity, 3) # type: ignore
     
-    def compare_maps(self, ground_truth: Mapping[str,str], llm_response: Mapping[str,str], threshold: int) -> Mapping[str,[str]]:
+    def compare_maps(self, ground_truth: Mapping[str,str], llm_response: Mapping[str,str], threshold: float) -> Mapping[str,[str]]:
         result = {}
         threshold /= 100
         for key,value in ground_truth.items():
             generated_token = llm_response.get(key)
-            score = self.compare_texts(value,generated_token)
+            if generated_token is None:
+                continue
+            score = self.compare_texts(value, generated_token)
 
-            if score < threshold:
+            if score > threshold:
                 result[key] = [value,generated_token,score]
         
         return result
@@ -38,4 +41,17 @@ if __name__ == "__main__":
     text_comparator = TextComparison()
     m1 = {"field1":"cat is in the bag","field2":"good morning","field3":"pretty"}
     m2 = {"field1":"dog is in the bag","field2":"good afternoon","field3": "beautiful"}
-    m_result = text_comparator.compare_maps(m1,m2,90)
+    section_fields_map1 = SectionFieldsMap({})
+    section_fields_map2 = SectionFieldsMap({})
+
+    # Add dummy data
+    for i in range(1, 11):
+        section_fields_map1.add_datafield(1, f"datafield_{i}", f"question_{i}")
+        section_fields_map2.add_datafield(1, f"datafield_{i}", f"inquiry{i}")
+    
+    # print(section_fields_map1.get_section_fields(1))
+    section_num = 1
+    sfm_results = text_comparator.compare_maps(section_fields_map1.get_section_fields(section_num), section_fields_map2.get_section_fields(section_num), 80)
+    print(f"Results for section {section_num}: \n{sfm_results}")
+    # m_result = text_comparator.compare_maps(m1,m2,80)
+    # print(m_result)
