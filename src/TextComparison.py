@@ -22,7 +22,7 @@ class TextComparison:
         similarity = 1 - cosine(embeddings1[0].numpy(), embeddings2[0].numpy())
         return round(similarity, 3) # type: ignore
     
-    def compare_maps(self, ground_truth: Mapping[str,str], llm_response: Mapping[str,str], threshold: float) -> Mapping[str,[str]]:
+    def compare_maps(self, ground_truth: Mapping[str,str], llm_response: Mapping[str,str], threshold: float) -> Mapping[str, list[str]]:
         result = {}
         threshold /= 100
         for key,value in ground_truth.items():
@@ -51,7 +51,9 @@ if __name__ == "__main__":
     
     # print(section_fields_map1.get_section_fields(1))
     section_num = 1
-    sfm_results = text_comparator.compare_maps(section_fields_map1.get_section_fields(section_num), section_fields_map2.get_section_fields(section_num), 80)
+    sfm_results = text_comparator.compare_maps(section_fields_map1.get_section_fields(section_num), section_fields_map2.get_section_fields(section_num), 0)
     print(f"Results for section {section_num}: \n{sfm_results}")
+    for datafield, result in sfm_results.items():
+        print(f"Datafield: {datafield}\nGround Truth: {result[0]}\nGenerated: {result[1]}\nSimilarity: {result[2]}")
     # m_result = text_comparator.compare_maps(m1,m2,80)
     # print(m_result)
