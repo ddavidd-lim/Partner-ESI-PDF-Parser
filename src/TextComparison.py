@@ -1,3 +1,4 @@
+from functools import partial
 from transformers import AutoTokenizer, AutoModel
 from scipy.spatial.distance import cosine
 import torch
@@ -46,14 +47,31 @@ if __name__ == "__main__":
 
     # Add dummy data
     for i in range(1, 11):
-        section_fields_map1.add_datafield(1, f"datafield_{i}", f"question_{i}")
-        section_fields_map2.add_datafield(1, f"datafield_{i}", f"inquiry{i}")
+        section_fields_map1.add_datafield(1, f"datafield_{i}", f"result_{i}")
+        section_fields_map2.add_datafield(1, f"datafield_{i}", f"answer_{i}")
     
     # print(section_fields_map1.get_section_fields(1))
     section_num = 1
     sfm_results = text_comparator.compare_maps(section_fields_map1.get_section_fields(section_num), section_fields_map2.get_section_fields(section_num), 0)
     print(f"Results for section {section_num}: \n{sfm_results}")
+    correct = []
+    partially_correct = []
+    incorrect = []
+    
     for datafield, result in sfm_results.items():
-        print(f"Datafield: {datafield}\nGround Truth: {result[0]}\nGenerated: {result[1]}\nSimilarity: {result[2]}")
+        string1 = result[0]
+        string2 = result[1]
+        similarity = float(result[2])
+        
+        if similarity > 0.8:
+            correct.append(datafield)
+        elif similarity > 0.6:
+            partially_correct.append(datafield)
+        else:
+            incorrect.append(datafield)
+            
+        print(f"Datafield: {datafield}\nGround Truth: {result[0]}\nGenerated: {result[1]}\nSimilarity: {result[2]}\n")
+    
+    print(f"Correct: {correct}\nPartially Correct: {partially_correct}\nIncorrect: {incorrect}")
     # m_result = text_comparator.compare_maps(m1,m2,80)
     # print(m_result)
