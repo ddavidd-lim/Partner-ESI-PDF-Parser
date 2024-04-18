@@ -1,4 +1,4 @@
-from classes import SectionFieldsMap as sfm
+from .classes.SectionFieldsMap import SectionFieldsMap as sfm
 import pandas as pd
 import os
 
@@ -78,7 +78,7 @@ def fieldMapping(df: pd.DataFrame) -> dict:
     return questions
 
 
-def createSections(df: pd.DataFrame) -> sfm.SectionFieldsMap:
+def createSections(df: pd.DataFrame) -> 'sfm.SectionFieldsMap':
     '''
     Generates dictionary containing all sections in ESA reports and their data.
 
@@ -104,7 +104,7 @@ def createSections(df: pd.DataFrame) -> sfm.SectionFieldsMap:
 
 
 # call to execute code and retrieve final mapping 
-def execute() -> sfm.SectionFieldsMap:
+def execute() -> 'sfm.SectionFieldsMap':
     '''
     Executes workflow to retrieve subsection mappings from the 'PCA_FIELDS.xlsx' Excel file.
 
