@@ -102,6 +102,22 @@ def createSections(df: pd.DataFrame) -> 'sfm.SectionFieldsMap':
     subsections = sfm.SectionFieldsMap(data)
     return subsections
 
+# call to retrieve mapping for front-end, runs independent of execute()
+def mappingForHover() -> dict:
+    '''
+    Generates field value dictionary to be used for the hover front-end feature.
+
+    Returns:
+        dict: Dictionary mapping {field: descript.} of all ESA fields.
+    '''
+    excel_file = 'PCA_FIELDS.xlsx'
+    df = xlsxToDf(excel_file)
+
+    esa_df = df[df['Bool convert mc commas'] == 'EsaReportField']
+    mapping = fieldMapping(esa_df)
+        
+    return mapping
+
 
 # call to execute code and retrieve final mapping 
 def execute() -> 'sfm.SectionFieldsMap':
