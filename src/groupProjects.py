@@ -1,57 +1,77 @@
-from classes import SectionFieldsMap
 import mapping
 import pandas as pd
-import os
 import copy
 
-def xlsxToDf(file: str) -> pd.DataFrame:
+def findReports(df: pd.DataFrame) -> set:
     '''
-    Reads Excel file and returns information as a pandas Dataframe.
+    Generates a set of report names from the ESA_Data DataFrame.
 
     Parameters:
-        file (str): path to the Excel file.
+        df (pd.DataFrame): DataFrame containing ESA report data.
 
     Returns:
-        pd.DataFrame: DataFrame containing the Excel fle data.
+        set: Set of all reports found in ESA_Data.
+    ''' 
+    report_nums = df['project_number_string']
+    reports = set(num for num in report_nums)
+    return reports
+
+
+def mapReportsToObject(reports: set) -> dict:
     '''
-    try:
-        cwd = os.getcwd()
-        file_path = os.path.join(cwd, "..", "data", "raw", file)
-        df = pd.read_excel(file_path)
-        return df
-    except Exception as e:
-        print("An error occurred:", e)
-        return None 
-    
-# returns set of reports
-df = xlsxToDf('ESA_DATA.xlsx')
-sub = df['project_number_string']
-reports = set(each for each in sub)
-print(len(reports))
-new_df = df[df['the_data'].notna()] # DF OF DATA WITH DROPPED NULLS
-print(new_df)
+    Maps each unique report number to its corresponding SFM object.
+
+    Parameters:
+        reports (set): A set of all report numbers.
+
+    Returns:
+        dict: Dictionary mapping of {report_num: sfm object} containing all reports.
+    '''   
+    report_mapping = dict()
+    sfm = mapping.execute()
+
+    for each in reports:
+        temp = copy.deepcopy(sfm)
+        report_mapping[each] = temp 
+    return report_mapping
 
 
-# TODO: set a dict to have all report num to SFM object
-d = dict()
-obj = mapping.execute()
-for each in reports:
-    temp = copy.deepcopy(obj)
-    d[each] = temp 
-#print(d) # d is a dict of {report_num: SFM}
+def updateMapping(valid_df: pd.DataFrame, report_mapping: dict) -> dict:
+    '''
+    Combines question-answer data with report mapping dictionary to update SFM objects.
+
+    Parameters:
+        valid_df (pd.DataFrame): DataFrame containing non-null answer values.
+        report_mapping (dict): Dictionary mapping report numbers to SFM objects.
+
+    Returns:
+        dict: Updated report mapping dictionary containing unique question-answer SFM objects.
+    ''' 
+    hold = dict()
+    for _,row in valid_df.iterrows():
+        if row["project_number_string"] in hold:
+            hold[row["project_number_string"]].append((row["document_spot"], row["the_data"]))
+        else:
+            hold[row["project_number_string"]] = []
+
+    for key,value in hold.items():
+        data_dict = {data[0]:data[1] for data in value}
+        report_mapping[key].fields = data_dict
+    return report_mapping
 
 
-hold = dict()
-for i,row in new_df.iterrows():
-    if row["project_number_string"] in hold:
-        hold[row["project_number_string"]].append((row["document_spot"], row["the_data"]))
-    else:
-        hold[row["project_number_string"]] = []
-for k,v in hold.items():
-    inner = {data[0]:data[1] for data in v}
-    d[k].fields = inner
+def execute() -> dict:
+    '''
+    Executes workflow to retrieve report dictionary for testing from the 'ESA_Data.xlsx' Excel file.
 
-print(d['22-390859.7'].fields) # testing for report answer dict 
+    Returns:
+        dict: Dictionary mapping {report_num: sfm object} of all testing reports.
+    ''' 
+    df = mapping.xlsxToDf('ESA_DATA.xlsx')
+    valid_df = df[df['the_data'].notna()] # HANDLED NULL VALUES FOR TESTING
 
+    report_set = findReports(df)
+    report_dict = mapReportsToObject(report_set)
+    result = updateMapping(valid_df, report_dict)
+    return result
 
-# TODO: return dict of {report number: sectionfieldsmap} containing all the reports
