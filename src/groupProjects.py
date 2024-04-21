@@ -2,6 +2,7 @@ import mapping
 import pandas as pd
 import copy
 
+
 def findReports(df: pd.DataFrame) -> set:
     '''
     Generates a set of report names from the ESA_Data DataFrame.
@@ -60,6 +61,7 @@ def updateMapping(valid_df: pd.DataFrame, report_mapping: dict) -> dict:
     return report_mapping
 
 
+# call to execute function to retrieve final mapping for testing
 def execute() -> dict:
     '''
     Executes workflow to retrieve report dictionary for testing from the 'ESA_Data.xlsx' Excel file.
@@ -75,3 +77,11 @@ def execute() -> dict:
     result = updateMapping(valid_df, report_dict)
     return result
 
+
+if __name__ == "__main__":
+    # run to view readable version of script (118 test reports)
+    result = execute()
+
+    for report_num, data in result.items():
+        print("\nREPORT: ", report_num)
+        print(data) # test with data.fields to retrieve dict in SFM object

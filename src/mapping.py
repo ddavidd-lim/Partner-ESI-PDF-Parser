@@ -119,7 +119,7 @@ def mappingForHover() -> dict:
     return mapping
 
 
-# call to execute code and retrieve final mapping 
+# call to execute function to retrieve final mapping 
 def execute() -> sfm.SectionFieldsMap:
     '''
     Executes workflow to retrieve subsection mappings from the 'PCA_FIELDS.xlsx' Excel file.
