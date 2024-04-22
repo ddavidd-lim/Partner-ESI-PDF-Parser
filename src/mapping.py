@@ -1,4 +1,4 @@
-from classes import SectionFieldsMap as sfm
+from .classes.SectionFieldsMap import SectionFieldsMap as sfm
 import pandas as pd
 import os
 
@@ -78,7 +78,7 @@ def fieldMapping(df: pd.DataFrame) -> dict:
     return questions
 
 
-def createSections(df: pd.DataFrame) -> sfm.SectionFieldsMap:
+def createSections(df: pd.DataFrame) -> 'sfm.SectionFieldsMap':
     '''
     Generates dictionary containing all sections in ESA reports and their data.
 
@@ -117,6 +117,7 @@ def mappingForHover() -> dict:
     mapping = fieldMapping(esa_df)
         
     return mapping
+
 
 
 # call to execute function to retrieve final mapping 

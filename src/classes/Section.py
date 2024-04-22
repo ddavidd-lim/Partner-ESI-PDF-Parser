@@ -7,6 +7,7 @@ class Section():
     self.section_num = "0"
     self.section_title = ""
     self.text = []
+    self.paragraph = ''
 
   def __str__(self):
     return f"Section {self.section_num} {self.section_title}:"
