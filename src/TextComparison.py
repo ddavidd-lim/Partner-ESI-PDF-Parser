@@ -1,9 +1,12 @@
 from functools import partial
+from click import group
 from transformers import AutoTokenizer, AutoModel
 from scipy.spatial.distance import cosine
 import torch
 from typing import List, Mapping, Tuple, Union
 from classes.SectionFieldsMap import SectionFieldsMap
+import groupProjects
+from tabulate import tabulate
 
 class TextComparison:
     def  __init__(self, model_name = "sentence-transformers/all-MiniLM-L6-v2"):
@@ -57,42 +60,70 @@ class TextComparison:
             else:
                 incorrect.append(datafield)
                 
-            print(f"Datafield: {datafield}\nGround Truth: {string1}\nGenerated: {string2}\nSimilarity: {similarity}\n")
+            # print(f"Datafield: {datafield}\nGround Truth: {string1}\nGenerated: {string2}\nSimilarity: {similarity}\n")
             
         return correct, partially_correct, incorrect
     
-    def retrieve_document_similarity(self, section_fields_map1: SectionFieldsMap, section_fields_map2: SectionFieldsMap, threshold: float) -> Tuple[List[str], List[str], List[str]]:
+    def retrieve_document_similarity(self, section_fields_map1: SectionFieldsMap, section_fields_map2: SectionFieldsMap, threshold: float):
         correct = []
         partially_correct = []
         incorrect = []
+        doc_results = dict()
         for section_num in section_fields_map1.fields:
+            # print(f"**************\n Section {section_num} \n************** ")
             sfm_results = self.compare_maps(section_fields_map1.get_section_fields(section_num), section_fields_map2.get_section_fields(section_num), threshold)
             c, pc, ic = self.retrieve_section_similarity(sfm_results)
             correct.extend(c)
             partially_correct.extend(pc)
             incorrect.extend(ic)
-        return correct, partially_correct, incorrect
+            doc_results[section_num] = sfm_results
+        return correct, partially_correct, incorrect, doc_results
     
 
 
 if __name__ == "__main__":
     text_comparator = TextComparison()
-    m1 = {"field1":"cat is in the bag","field2":"good morning","field3":"pretty"}
-    m2 = {"field1":"dog is in the bag","field2":"good afternoon","field3": "beautiful"}
     section_fields_map1 = SectionFieldsMap({})
     section_fields_map2 = SectionFieldsMap({})
 
     # Add dummy data
     for i in range(1, 11):
-        section_fields_map1.add_datafield(1, f"datafield_{i}", f"result_{i}")
-        section_fields_map2.add_datafield(1, f"datafield_{i}", f"answer_{i}")
+        for j in range(1,10):
+            section_fields_map1.add_datafield(i, f"datafield{i}_{j}", f"result{i}_{j}")
+            section_fields_map2.add_datafield(i, f"datafield{i}_{j}", f"answer{i}_{j}")
+    
+    # Get ground truth from ESA_DATA.xlsx
+    # results = groupProjects.execute()
     
     # print(section_fields_map1.get_section_fields(1))
     section_num = 1
+    
+    # ** Section Results **
     sfm_results = text_comparator.compare_maps(section_fields_map1.get_section_fields(section_num), section_fields_map2.get_section_fields(section_num), 0)
     print(f"Results for section {section_num}: \n{sfm_results}")
     correct, partially_correct, incorrect = text_comparator.retrieve_section_similarity(sfm_results)
-    
     print(f"Correct: {correct}\nPartially Correct: {partially_correct}\nIncorrect: {incorrect}")
-    # m_result = text_comparator.compare_maps(m1,m2,80)
-    # print(m_result)
+    
+    # ** Document Results **
+    correct, partially_correct, incorrect, doc_results = text_comparator.retrieve_document_similarity(section_fields_map1, section_fields_map2, 0)
+    # print(f"Results for Document: \n{doc_results}")
+    headers = ['Section Number', 'Data Field', 'Ground Truth', 'Generated Result', 'Score']
+    
+    section = ""
+    while section != "quit":
+        print(f"Section numbers: {list(doc_results.keys())}")
+        section = input("> Enter a section number to view scores. Enter 'quit' to exit\n> ")
+        if section == "exit":
+            break
+        elif int(section) not in doc_results.keys():
+            print("Invalid section number")
+            continue
+        else:
+            table_data = []
+            section_results = doc_results[int(section)]
+            for data_field, values in section_results.items():
+                row = [section, data_field] + values
+                table_data.append(row)
+            
+            print(tabulate(table_data, headers=headers, floatfmt=".3f"))
+    
