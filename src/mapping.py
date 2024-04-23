@@ -1,4 +1,4 @@
-from .classes.SectionFieldsMap import SectionFieldsMap as sfm
+from classes import SectionFieldsMap as sfm
 import pandas as pd
 import os
 
@@ -78,7 +78,7 @@ def fieldMapping(df: pd.DataFrame) -> dict:
     return questions
 
 
-def createSections(df: pd.DataFrame) -> 'sfm.SectionFieldsMap':
+def createSections(df: pd.DataFrame) -> sfm.SectionFieldsMap:
     '''
     Generates dictionary containing all sections in ESA reports and their data.
 
@@ -119,8 +119,8 @@ def mappingForHover() -> dict:
     return mapping
 
 
-# call to execute code and retrieve final mapping 
-def execute() -> 'sfm.SectionFieldsMap':
+# call to execute function to retrieve final mapping 
+def execute() -> sfm.SectionFieldsMap:
     '''
     Executes workflow to retrieve subsection mappings from the 'PCA_FIELDS.xlsx' Excel file.
 
@@ -146,4 +146,3 @@ if __name__ == "__main__":
     print(result)
 
 # note: 2182 ESA values found and verified 
-

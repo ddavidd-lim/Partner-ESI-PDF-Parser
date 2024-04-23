@@ -42,5 +42,16 @@ python .\src\generateTemplate.py
 ```
 
 ## Usage
+Change directory to file-upload-app:
+```
+cd file-upload-app
+```
 
+## Launch the frontend:
+### Install dependencies: ```npm install```
+
+### Start frontend: ```npm start```
+
+## Launch the backend:
+```node server.js```
 ## Authors and Acknowledgement
