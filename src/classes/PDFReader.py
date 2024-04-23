@@ -2,7 +2,7 @@ import fitz
 import re
 import os
 from typing import List, Tuple, Dict
-from .Section import Section
+from Section import Section
 
 class PDFReader:
 	def extract_by_section(self, pages: List[Tuple[str, List[str]]]) -> List[Section]:
@@ -51,7 +51,7 @@ class PDFReader:
 		return sections
 
 
-	def extract_subsections(self, sections: List[Section]) -> 'Dict{int: Dict{int: Section}}':
+	def extract_subsections(self, sections: List[Section]) -> Dict[int, Dict[int, Section]]:
 		"""_summary_
 		Takes in a list of Sections, where each Section contains the section number, section title, and section text 
 		  where each text is a list of lines. 
@@ -112,7 +112,7 @@ class PDFReader:
 
 		for section in section_map: 
 			print(section_map[section]) #for line in section.text: 
-		 		#print(line, '\n\n')
+			print(line, '\n\n')
 
 		return section_map
 
@@ -180,4 +180,10 @@ class PDFReader:
 		
 		return self.section_to_text(section_map)
 	
-	
+if __name__ == "__main__":
+	reader = PDFReader()
+	section_map = reader.process_file("20-301704.3.pdf")
+	print(section_map)
+	for section in section_map: 
+		print(f"{section_map[section]}\n")
+  
