@@ -26,7 +26,9 @@ class PDFReader:
 				#print("done--------------------------------------------------------------------------")
 				# Split section num from line
 				split_line = line.split()
+				#print(split_line)
 				section_num = split_line[0]
+				#print('NEW SECTION FOUND:', section_num)
 				if section_num.endswith(".0"):
 					if current_section:
 						sections.append(current_section)
@@ -110,9 +112,9 @@ class PDFReader:
 			section_map[section_num] = subsections
 			current_subsection = None
 
-		for section in section_map: 
-			print(section_map[section]) #for line in section.text: 
-		 		#print(line, '\n\n')
+		# for section in section_map: 
+		# 	print(section_map[section]) #for line in section.text: 
+		#  		#print(line, '\n\n')
 
 		return section_map
 
@@ -177,7 +179,8 @@ class PDFReader:
 		print("extracing by section .......................................................................................")
 		sections = self.extract_by_section(content)
 		section_map = self.extract_subsections(sections)
-		
-		return self.section_to_text(section_map)
+
+		print("Section Map: ", section_map)
+		return section_map
 	
 	

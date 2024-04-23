@@ -15,7 +15,7 @@ def xlsxToDf(file: str) -> pd.DataFrame:
     '''
     try:
         cwd = os.getcwd()
-        file_path = os.path.join(cwd, "..", "data", "raw", file)
+        file_path = os.path.join(cwd, "data", "raw", file)
         df = pd.read_excel(file_path)
         return df
     except Exception as e:
@@ -99,7 +99,7 @@ def createSections(df: pd.DataFrame) -> 'sfm.SectionFieldsMap':
         mapping = fieldMapping(temp)
         data[sec] = mapping
         
-    subsections = sfm.SectionFieldsMap(data)
+    subsections = sfm(data)
     return subsections
 
 # call to retrieve mapping for front-end, runs independent of execute()
