@@ -2,7 +2,7 @@ import fitz
 import re
 import os
 from typing import List, Tuple, Dict
-from Section import Section
+from src.classes.Section import Section
 
 class PDFReader:
 	def extract_by_section(self, pages: List[Tuple[str, List[str]]]) -> List[Section]:
@@ -142,11 +142,11 @@ class PDFReader:
 		Returns:
 			Dict{int: Dict{int: Section}}: A dictionary that maps main section number to a dict of its subsections
 		"""
-		print('here')
+		#print('here')
 		current_directory = os.path.dirname(os.path.abspath(__file__))
 		pdf_name = filename
 		pdf_path = os.path.join(current_directory, "..", "..", "data","raw", pdf_name)
-		print(pdf_path)
+		#print(pdf_path)
 		output_path = os.path.join(current_directory, "..",	"..", "data","processed", "output.txt")
 		doc = fitz.open(pdf_path)
 		out = open(output_path, "wb")
@@ -176,12 +176,12 @@ class PDFReader:
 					page_num = ""
 
 		content = self.remove_table_of_contents(pages)
-		print("extracing by section .......................................................................................")
+		#print("extracing by section .......................................................................................")
 		sections = self.extract_by_section(content)
 		section_map = self.extract_subsections(sections)
 		
 	
-		print("Section Map: ", section_map)
+		#print("Section Map: ", section_map)
 		return section_map
 	
 

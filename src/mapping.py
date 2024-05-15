@@ -1,4 +1,4 @@
-from classes import SectionFieldsMap as sfm
+from src.classes import SectionFieldsMap as sfm
 import pandas as pd
 import os
 
@@ -99,7 +99,7 @@ def createSections(df: pd.DataFrame) -> sfm.SectionFieldsMap:
         mapping = fieldMapping(temp)
         data[sec] = mapping
         
-    subsections = sfm(data)
+    subsections = sfm.SectionFieldsMap(data)
     return subsections
 
 # call to retrieve mapping for front-end, runs independent of execute()
