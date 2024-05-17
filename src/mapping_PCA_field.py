@@ -1,4 +1,4 @@
-from src.classes import SectionFieldsMap as sfm
+from classes import SectionFieldsMap as sfm
 import pandas as pd
 import os
 

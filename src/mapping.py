@@ -56,6 +56,7 @@ def fieldMapping(df: pd.DataFrame) -> dict:
         dict: Dictionary mapping {"field_value_code": "description"} of rows.
     '''
     questions = {} 
+    df = df.dropna(subset=['Name', 'Description'])
     for index, row in df.iterrows():
         questions[row["Name"]] = row["Description"]
     return questions
