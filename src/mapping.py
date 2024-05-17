@@ -45,6 +45,21 @@ def checkSection(value, section: str) -> bool:
     return False
 
 
+def section(df: pd.DataFrame, section: str) -> pd.DataFrame:
+    '''
+    Filters the DataFrame to extract the valid rows containing ESA values within corresponding subsection.
+
+    Parameters:
+        df (pd.DataFrame): original DataFrame of the Excel file.
+        section (str): the report section number to filter.
+
+    Returns:
+        pd.DataFrame: DataFrame containing only rows related to Esa Reports within subsection.
+    '''
+    all_sections = df['Section']
+    section_df = df[all_sections.apply(lambda x: checkSection(x, section))] 
+    return section_df
+
 def fieldMapping(df: pd.DataFrame) -> dict:
     '''
     Creates mapping of valid field values to their corresponding descriptions in DataFrame.
@@ -75,10 +90,13 @@ def createSections(df: pd.DataFrame) -> sfm.SectionFieldsMap:
     sub_df = df['Section'].dropna()
     #section_set = set(sub_df)
     edited = set(str(each) for each in sub_df)
+    print(len(edited))
+    print(edited)
 
     data = {}
     for sec in edited:
-        mapping = fieldMapping(df)
+        temp = section(df, sec)
+        mapping = fieldMapping(temp)
         data[sec] = mapping
         
     subsections = sfm.SectionFieldsMap(data)
