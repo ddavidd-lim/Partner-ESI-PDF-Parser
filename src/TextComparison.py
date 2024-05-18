@@ -1,4 +1,6 @@
 from functools import partial
+import json
+import os
 from click import group
 from transformers import AutoTokenizer, AutoModel
 from scipy.spatial.distance import cosine
@@ -29,9 +31,11 @@ class TextComparison:
         similarity = 1 - cosine(embeddings1[0].numpy(), embeddings2[0].numpy())
         return round(similarity, 3) # type: ignore
     
-    def compare_maps(self, ground_truth: Mapping[str,str], llm_response: Mapping[str,str], threshold: float) -> Mapping[str, List[Union[str, str, float]]]:
+    def compare_maps(self, ground_truth, llm_response, threshold: float) -> Mapping[str, List[Union[str, str, float]]]:
         result: Mapping[str, List[Union[str, str, float]]] = {}
         threshold /= 100
+        if ground_truth == None or llm_response == None:
+            return {'0': ['0', '0', 0]}
         for key,value in ground_truth.items():
             generated_token = llm_response.get(key)
             if generated_token is None:
@@ -87,26 +91,39 @@ if __name__ == "__main__":
     section_fields_map2 = SectionFieldsMap({})
 
     # Add dummy data
-    for i in range(1, 11):
-        for j in range(1,10):
-            section_fields_map1.add_datafield(i, f"datafield{i}_{j}", f"result{i}_{j}")
-            section_fields_map2.add_datafield(i, f"datafield{i}_{j}", f"answer{i}_{j}")
+    # for i in range(1, 11):
+    #     for j in range(1,10):
+    #         section_fields_map1.add_datafield(i, f"datafield{i}_{j}", f"result{i}_{j}")
+    #         section_fields_map2.add_datafield(i, f"datafield{i}_{j}", f"answer{i}_{j}")
+            
+    # Load LLM results
+    with open('data\processed\phi3_output2.json', 'r') as f:
+        data = json.load(f)
+        
+    # print(data['1.0'].keys())
+    
+    # Create Section_fields_maps
+    for subsection, field_answer_pairs in data.items():
+        for field, answer in field_answer_pairs.items():
+            section_fields_map1.add_datafield(subsection, field, answer)
     
     # Get ground truth from ESA_DATA.xlsx
-    # results = groupProjects.execute()
-    
+    results = groupProjects.execute()
+    # print(results)
+    ground_truth = results["20-301704.3"]
+    # print(ground_truth.items())
     # print(section_fields_map1.get_section_fields(1))
-    section_num = 1
+    # section_num = 1
     
-    # ** Section Results **
-    sfm_results = text_comparator.compare_maps(section_fields_map1.get_section_fields(section_num), section_fields_map2.get_section_fields(section_num), 0)
-    print(f"Results for section {section_num}: \n{sfm_results}")
-    correct, partially_correct, incorrect = text_comparator.retrieve_section_similarity(sfm_results)
-    print(f"Correct: {correct}\nPartially Correct: {partially_correct}\nIncorrect: {incorrect}")
+    # # ** Section Results **
+    # sfm_results = text_comparator.compare_maps(section_fields_map1.get_section_fields(section_num), section_fields_map2.get_section_fields(section_num), 0)
+    # print(f"Results for section {section_num}: \n{sfm_results}")
+    # correct, partially_correct, incorrect = text_comparator.retrieve_section_similarity(sfm_results)
+    # print(f"Correct: {correct}\nPartially Correct: {partially_correct}\nIncorrect: {incorrect}")
     
-    # ** Document Results **
-    correct, partially_correct, incorrect, doc_results = text_comparator.retrieve_document_similarity(section_fields_map1, section_fields_map2, 0)
-    # print(f"Results for Document: \n{doc_results}")
+    # # ** Document Results **
+    correct, partially_correct, incorrect, doc_results = text_comparator.retrieve_document_similarity(section_fields_map1, ground_truth, 0)
+    print(f"Results for Document: \n{doc_results}")
     headers = ['Section Number', 'Data Field', 'Ground Truth', 'Generated Result', 'Score']
     
     section = ""
