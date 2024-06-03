@@ -1,0 +1,77 @@
+import React, { useState, useEffect } from 'react';
+import { Document, Page } from 'react-pdf';
+import Header from '../../Components/Header/Header';
+import './Json.css';
+
+function Json({ file }) {
+  const [jsonData, setJsonData] = useState([]);
+  const [pdfFileUrl, setPdfFileUrl] = useState(null);
+  const jsonPath = 'http://localhost:5000/uploads/field.json';
+  useEffect(() => {
+    if (file) {
+      if (file.type !== 'application/pdf') {
+        alert('Uploaded file is not a PDF.');
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const json = JSON.parse(e.target.result);
+          setJsonData(Object.entries(json).map(([key, value]) => ({ id: key, ...value })));
+        };
+        reader.readAsText(file);
+      }
+      else{
+        const pdfFileUrl = URL.createObjectURL(file);
+        setPdfFileUrl(pdfFileUrl);
+        fetch(jsonPath)
+        .then((response) => response.json())
+        .then((json) => {
+          setJsonData(Object.entries(json).map(([key, value]) => ({ id: key, ...value })));
+        });
+      }
+      
+    }
+  }, [file]);
+
+  const renderContent = (data) => {
+    return data.map((section, index) => (
+      <div key={index} className="json-section">
+        <h2 className="json-section-title">Section {section.id}</h2>
+        <div className="json-section-content">
+          {Object.entries(section).map(([key, value]) => {
+            if (key !== 'id') {
+              return (
+                <div key={key} className="json-data-field">
+                  <span className="json-data-key">{key}:</span>
+                  <span className="json-data-value">{value.toString()}</span>
+                </div>
+              );
+            }
+            return null;
+          })}
+        </div>
+      </div>
+    ));
+  };
+
+  return (
+    <>
+      <Header />
+      <div className="json-page-container">
+        <div className="json-split-container">
+          <div className="json-pdf-container">
+            <object data={pdfFileUrl} type="application/pdf" width="100%" height="100%">
+              <p>Alternative text - include a link <a href="http://africau.edu/images/default/sample.pdf">to the PDF!</a></p>
+          </object>
+          </div>
+          <div className="json-json-container">
+            <h1>JSON Content</h1>
+            <div className="json-content-display">
+              {renderContent(jsonData)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default Json;

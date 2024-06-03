@@ -1,0 +1,16 @@
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px 0;
+    background-color: #fff;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    /* box-shadow: 0 4px 2px -2px gray; */
+    /* margin-bottom: 2em; */
+  }
+  
+  .partner {
+    font-weight: bold;
+    font-size: 1.5em;
+    color: #0B2CA3;
+  }

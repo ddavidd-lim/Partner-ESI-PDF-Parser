@@ -1,0 +1,47 @@
+.file-upload-container {
+  width: 100%;
+  max-width: 600px; 
+  margin: 40px auto; 
+  padding: 20px;
+  text-align: center;
+  background-color: #f9f9f9; /* Light background for the upload area */
+  border-radius: 8px; /* Rounded corners for the container */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+.upload-area {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #ffffff; 
+}
+
+.upload-area p {
+  margin-bottom: 20px;
+  color: #555; /* Darker text color for visibility */
+}
+
+.upload-area button {
+  background-color: #0B2CA3; /* Button color */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold; /* Make the text a bit bolder */
+}
+
+.upload-area span {
+  display: block;
+  margin-top: 20px;
+  color: #555;
+}
+
+.generate-btn {
+  background-color: #0056b3; /* Slightly different shade for the main action */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+}

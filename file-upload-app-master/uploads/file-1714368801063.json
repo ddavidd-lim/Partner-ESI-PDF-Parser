@@ -1,0 +1,28 @@
+{
+  "1": {
+    "agent_name": "John",
+    "password": "1234",
+    "email": "john@gmail.com",
+    "weather": "sunny",
+    "temperature": "hot",
+    "activity": "swimming",
+    "location": "beach",
+    "time": "morning",
+    "date": "2021-07-01",
+    "price": "100",
+    "duration": "2",
+    "group_size": "5"},
+  "2": {
+    "agent_name": "John",
+    "password": "1234",
+    "email": "john@gmail.com",
+    "weather": "sunny",
+    "temperature": "hot",
+    "activity": "swimming",
+    "location": "beach",
+    "time": "morning",
+    "date": "2021-07-01",
+    "price": "100",
+    "duration": "2",
+    "group_size": "5"}
+}
