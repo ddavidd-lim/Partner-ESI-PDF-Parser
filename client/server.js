@@ -19,6 +19,16 @@ app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.post('/upload', upload.single('file'), (req, res) => {
   console.log(req.file); // Uploaded file information
+  
+  // Run Python script
+  exec('python your_script.py', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+  });
   res.json({ message: 'File uploaded successfully.' });
 });
 

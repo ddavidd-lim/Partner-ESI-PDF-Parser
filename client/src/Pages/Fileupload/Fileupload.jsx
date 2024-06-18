@@ -28,7 +28,7 @@ function FileUpload({ onFileUpload }) {
 
     const formData = new FormData();
     formData.append('file', selectedFile);
-
+    alert('Please wait for the system to process the file. Close this box to continue. This may take a while.');
     try {
       const response = await fetch('http://localhost:5000/upload', {
         method: 'POST',
